@@ -28,6 +28,7 @@ public:
         config.tx_config.idle_output_en = true;
         config.tx_config.idle_level = RMT_IDLE_LEVEL_LOW;
         config.tx_config.carrier_level = RMT_CARRIER_LEVEL_HIGH;
+        config.flags = RMT_CHANNEL_FLAGS_AWARE_DFS;
         config.clk_div = 8; // 80MHx / 8 = 10MHz translates to  0,1 us = 100 ns per count
 
         auto ret = rmt_config(&config);
@@ -51,7 +52,6 @@ public:
 
     uint32_t color32_to_bytes(uint32_t color32, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *w)
     {
-
         *g = (color32 >> 24) & 0xff;
         *r = (color32 >> 16) & 0xff;
         *b = (color32 >> 8) & 0xff;
@@ -60,18 +60,23 @@ public:
         return (color32);
     }
 
-    void set_color32(int led, uint32_t kleur, int brightness = -1)
+    void set_color32(int led, uint32_t color, int brightness = -1)
     {
         uint8_t r, g, b, w;
 
-        color32_to_bytes(kleur, &r, &g, &b, &w);
+        color32_to_bytes(color, &r, &g, &b, &w);
         set_color(led, r, g, b, w, brightness);
 
     }
 
+    uint32_t get_color() const
+    {
+        return curr_color;
+    }
+
     void set_color(int led, uint8_t red, uint8_t green, uint8_t blue, uint8_t white, int brightness = -1)
     {
-        uint32_t kleur = 0, bright;
+        uint32_t color32 = 0, bright;
         int i, bit;
 
         if (led < 0 || led >= get_led_count()) return;
@@ -84,14 +89,16 @@ public:
         blue = bright * blue / 100;
         white = bright * white / 100;
 
-        kleur |= ((uint32_t) green << 24);
-        kleur |= ((uint32_t) red << 16);
-        kleur |= ((uint32_t) blue << 8);
-        kleur |= (uint32_t) white;
+        color32 |= ((uint32_t) green << 24);
+        color32 |= ((uint32_t) red << 16);
+        color32 |= ((uint32_t) blue << 8);
+        color32 |= (uint32_t) white;
+
+        curr_color = color32;
 
         for (i = (led * 32), bit = 0; bit < 32; bit++) {
 
-            if ((kleur & (1 << (31 - bit)))) {
+            if ((color32 & (1 << (31 - bit)))) {
                 rmt_item()[i].level0 = 1;
                 rmt_item()[i].duration0 = 6;
                 rmt_item()[i].level1 = 0;
@@ -131,6 +138,7 @@ public:
 private:
     int bit_count;
     const char *TAG = "sk6812rgbw";
+    uint32_t curr_color = 0;
     static rmt_item32_t *rmt_item()
     {
         static rmt_item32_t item[COUNT * 32];
