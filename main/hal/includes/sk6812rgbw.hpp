@@ -60,18 +60,24 @@ public:
         return (color32);
     }
 
-    void set_color32(int led, uint32_t color, int brightness = -1)
+    uint32_t get_color() const
+    {
+        return curr_color;
+    }
+
+    void set_color(int led, uint32_t color, int brightness = -1)
     {
         uint8_t r, g, b, w;
 
         color32_to_bytes(color, &r, &g, &b, &w);
         set_color(led, r, g, b, w, brightness);
-
     }
 
-    uint32_t get_color() const
+    void set_color(uint32_t color, int brightness = -1)
     {
-        return curr_color;
+        for (size_t cnt = 0; cnt < COUNT; cnt += 1) {
+            set_color(cnt, color, brightness);
+        }
     }
 
     void set_color(int led, uint8_t red, uint8_t green, uint8_t blue, uint8_t white, int brightness = -1)
@@ -113,6 +119,13 @@ public:
             ++i;
         }
 
+    }
+
+    void set_color(uint8_t red, uint8_t green, uint8_t blue, uint8_t white, int brightness = -1)
+    {
+        for (size_t cnt = 0; cnt < COUNT; cnt += 1) {
+            set_color(cnt, red, green, blue, white, brightness);
+        }
     }
 
     esp_err_t commit()
