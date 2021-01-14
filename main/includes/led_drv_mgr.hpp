@@ -4,18 +4,18 @@
 
 using sk6812 = sk6812rgbw<GPIO_NUM_5, 15, RMT_CHANNEL_7>;
 
-class led_manager
+class led_drv_mgr
 {
 public:
-    static led_manager& instance()
+    static led_drv_mgr& instance()
     {
-        static led_manager instance;
+        static led_drv_mgr instance;
         return instance;
     }
 
 
-    led_manager (led_manager const &) = delete;
-    void operator=(led_manager const &) = delete;
+    led_drv_mgr (led_drv_mgr const &) = delete;
+    void operator=(led_drv_mgr const &) = delete;
 
 public:
     sk6812 &device()
@@ -24,6 +24,6 @@ public:
     }
 
 private:
-    led_manager() = default;
+    led_drv_mgr() = default;
     sk6812 sk{};
 };

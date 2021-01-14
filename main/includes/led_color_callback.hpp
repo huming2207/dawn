@@ -8,6 +8,8 @@ public:
     void onRead(NimBLECharacteristic* pCharacteristic) override;
     void onWrite(NimBLECharacteristic* pCharacteristic) override;
 
+private:
+    static constexpr const char *TAG = "ble_led_char";
 };
 
 

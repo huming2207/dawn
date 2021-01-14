@@ -1,23 +1,37 @@
 #include "ble_server_cb.hpp"
 #include "led_serv_mgr.hpp"
+#include "led_drv_mgr.hpp"
+#include "led_color_callback.hpp"
 
-#define SERVICE_UUID            "1ac91080-1067-478c-b72c-34a8a317da08"
-#define COLOR_UUID              "effd29b9-fa9b-4d61-84f5-24e397c59962"
-#define BRIGHTNESS_UUID         "dca811c8-f101-4ed5-a7db-b6729a90eb39"
-
-void led_serv_mgr::ble_conn_task(void *ctx)
-{
-
-}
+#define SERVICE_UUID            "fbe1b71b-42a1-4c3a-9f00-85c6d996af53"
+#define COLOR_UUID              "fbe1b71b-42a1-4c3a-9f00-85c6d996af56"
 
 esp_err_t led_serv_mgr::init()
 {
+    auto ret = led_drv_mgr::instance().device().init();
+    if (ret != ESP_OK) {
+        ESP_LOGI(TAG, "LED Device init error: 0x%x", ret);
+        return ret;
+    }
+
     server = NimBLEDevice::createServer();
     server->setCallbacks(new ble_server_cb());
 
     NimBLEService *service = server->createService(SERVICE_UUID);
-    auto *color_character = service->createCharacteristic(COLOR_UUID);
-    auto *bright_character = service->createCharacteristic(BRIGHTNESS_UUID);
+
+    auto *color_character = service->createCharacteristic(COLOR_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_ENC);
+    color_character->setCallbacks(new led_color_callback());
+
+    if (!service->start()) {
+        ESP_LOGE(TAG, "Failed to start BLE LED service");
+        return ESP_FAIL;
+    }
+
+    if (!server->getAdvertising()->start()) {
+        ESP_LOGE(TAG, "Failed to start BLE Server");
+        return ESP_FAIL;
+    }
+
 
     return ESP_OK;
 }
