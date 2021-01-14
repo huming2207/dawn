@@ -28,7 +28,6 @@ public:
         config.tx_config.idle_output_en = true;
         config.tx_config.idle_level = RMT_IDLE_LEVEL_LOW;
         config.tx_config.carrier_level = RMT_CARRIER_LEVEL_HIGH;
-        config.flags = RMT_CHANNEL_FLAGS_AWARE_DFS;
         config.clk_div = 8; // 80MHx / 8 = 10MHz translates to  0,1 us = 100 ns per count
 
         auto ret = rmt_config(&config);
