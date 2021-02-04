@@ -40,8 +40,8 @@ public:
     {
         uint32_t color32 = 0;
 
-        color32 |= ((uint32_t) g << 24);
-        color32 |= ((uint32_t) r << 16);
+        color32 |= ((uint32_t) r << 24);
+        color32 |= ((uint32_t) g << 16);
         color32 |= ((uint32_t) b << 8);
         color32 |= (uint32_t) w;
 
@@ -51,8 +51,8 @@ public:
 
     uint32_t color32_to_bytes(uint32_t color32, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *w)
     {
-        *g = (color32 >> 24) & 0xff;
-        *r = (color32 >> 16) & 0xff;
+        *r = (color32 >> 24) & 0xff;
+        *g = (color32 >> 16) & 0xff;
         *b = (color32 >> 8) & 0xff;
         *w = color32 & 0xff;
 
