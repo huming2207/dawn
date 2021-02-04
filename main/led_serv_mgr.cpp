@@ -27,6 +27,7 @@ esp_err_t led_serv_mgr::init()
         return ESP_FAIL;
     }
 
+    server->getAdvertising()->addServiceUUID(SERVICE_UUID);
     if (!server->getAdvertising()->start()) {
         ESP_LOGE(TAG, "Failed to start BLE Server");
         return ESP_FAIL;
