@@ -1,3 +1,6 @@
 [submodule "components/esp-nimble-cpp"]
 	path = components/esp-nimble-cpp
 	url = https://github.com/h2zero/esp-nimble-cpp
+[submodule "components/libSWD-esp32"]
+	path = components/libSWD-esp32
+	url = https://github.com/PaulFreund/libSWD-esp32.git
